@@ -99,6 +99,7 @@ display(MYSQL* conn,string userChat, int adder){
 	}
 }
 
+
 int main()
 {
 	string userChat; //user input
@@ -130,10 +131,12 @@ int main()
 			cout<<"For reviewing our KIBU keyboard please type KIBU review or KIBU"<<endl<<endl;
 		}
 		else if (userChat=="RATT review" || userChat=="RATT"){
-			cout<<"RATTTTT MASTER"<<endl;
+			cout<<"What can you say about our product?"<<endl;
+			getline(cin>>ws, userChat);
 		}
 		else if (userChat=="KIBU review" || userChat=="KIBU"){
-			cout<<"KIKI BUBU"<<endl;
+			cout<<"What can you say about our product?"<<endl;
+			getline(cin>>ws, userChat);
 		}
 		else{ //normal conversation with user
 			display(conn,userChat,0);
