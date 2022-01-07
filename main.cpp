@@ -48,15 +48,19 @@ insert (MYSQL* conn){
 	}
 }
 
-display(MYSQL* conn){
+display(MYSQL* conn,string userChat){
 	MYSQL_ROW row;
 	MYSQL_RES* res;
-	string userChat;
-	cin>>userChat;
+	//string userChat;
+	string choice;
+	int responseCounter;
+	//cout<<"User: ";
+	//getline(cin>>ws, userChat);
 	stringstream ss;
 	ss<<"SELECT botResponse FROM convo WHERE userQuery ='"+userChat+"'";
 	string query = ss.str();
 	const char* q = query.c_str();
+
 	if (conn){
 		int qstate = mysql_query(conn, q);
 		if(!qstate){
@@ -64,8 +68,9 @@ display(MYSQL* conn){
 			int count = mysql_num_fields(res);
 			while (row = mysql_fetch_row(res)){
 				for(int i=0;i<count;i++){
-					cout<<row[i];
+					responseCounter = i;
 				}
+				cout<<"SentiBOT: "<<row[responseCounter];
 				cout<<endl;
 			}
 		}
@@ -77,9 +82,35 @@ display(MYSQL* conn){
 
 int main()
 {
+	string userChat;
+	string choice;
+	int sessionCounter = 1;
 	MYSQL* conn = connectdatabase();
+	cout<<"Hi I am SentiBOT. How may I help you?\n";
 	//insert(conn);
-	display(conn);
+	while (sessionCounter ==1)
+	{
+		cout<<"User: ";
+		getline(cin>>ws, userChat);
+		if(userChat=="exit"||userChat=="Exit"||userChat=="EXIT"){
+			cout<<"Are you sure?\n";
+			cout<< "[1]: Yes" << endl;
+			cout<< "[0]: No" << endl;
+			cout<<"User: "; 
+			cin>>choice;
+			cin.ignore(100, '\n');
+				if (choice == "1" || choice =="Yes"){
+					cout<<"Thank you for using SentiBOT. Goodbye :D";
+					sessionCounter==0;
+					break;	
+				}
+		}
+		else{
+			display(conn,userChat);
+		}
+		
+
+	}
 	
 	return 0;
 }
