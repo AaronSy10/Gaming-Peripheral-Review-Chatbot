@@ -32,30 +32,26 @@ insert (MYSQL* conn){
 	int qstate = 0;
 	stringstream ss;
 	string userQuerydb, botResponsedb;
-	cout<<"Enter userQuery";
-	cin>>userQuerydb;
-	cout<<"Enter botResponse";
-	cin>>botResponsedb;
+	cout<<"Enter userQuery: ";
+	getline(cin>>ws, userQuerydb);
+	cout<<"Enter botResponse: ";
+	getline(cin>>ws, botResponsedb);
 	ss <<"INSERT INTO convo (userQuery, botResponse) VALUES ('"+userQuerydb+"','"+botResponsedb+"')";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
 	if(qstate == 0){
-		cout<<"Record inserted"<<endl;
+		cout<<"Conversation added"<<endl;
 	}
 	else{
 		cout<<"Failed to insert"<<endl;	
 	}
 }
 
-display(MYSQL* conn,string userChat){
+display(MYSQL* conn,string userChat, int adder){
 	MYSQL_ROW row;
 	MYSQL_RES* res;
-	//string userChat;
-	string choice;
-	int responseCounter;
-	//cout<<"User: ";
-	//getline(cin>>ws, userChat);
+	int responseCounter; //response by bot
 	stringstream ss;
 	ss<<"SELECT botResponse FROM convo WHERE userQuery ='"+userChat+"'";
 	string query = ss.str();
@@ -71,8 +67,13 @@ display(MYSQL* conn,string userChat){
 					responseCounter = i;
 				}
 				cout<<"SentiBOT: "<<row[responseCounter];
+				adder=1;
 				cout<<endl;
 			}
+		if (adder==0){
+			insert(conn);
+			adder=1;
+		}
 		}
 	}
 	else{
@@ -82,9 +83,9 @@ display(MYSQL* conn,string userChat){
 
 int main()
 {
-	string userChat;
-	string choice;
-	int sessionCounter = 1;
+	string userChat; //user input
+	string choice; //choice to exit
+	int sessionCounter = 1; //program running
 	MYSQL* conn = connectdatabase();
 	cout<<"Hi I am SentiBOT. How may I help you?\n";
 	//insert(conn);
@@ -106,7 +107,7 @@ int main()
 				}
 		}
 		else{
-			display(conn,userChat);
+			display(conn,userChat,0);
 		}
 		
 
