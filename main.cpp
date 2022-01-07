@@ -30,21 +30,39 @@ MYSQL* connectdatabase(){
 
 insert (MYSQL* conn){
 	int qstate = 0;
-	stringstream ss;
-	string userQuerydb, botResponsedb;
-	cout<<"Enter userQuery: ";
-	getline(cin>>ws, userQuerydb);
-	cout<<"Enter botResponse: ";
-	getline(cin>>ws, botResponsedb);
-	ss <<"INSERT INTO convo (userQuery, botResponse) VALUES ('"+userQuerydb+"','"+botResponsedb+"')";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Conversation added"<<endl;
+	string decision, adminPassword; //decision to add
+	cout<<"Sorry I didn't quite get that. Would you like to add it to my vocabulary?"<<endl;
+	cout<< "[1]: Yes" << endl;
+	cout<< "[0]: No" << endl;
+	cout<< "User: ";
+	getline(cin>>ws, decision);
+	if (decision == "Yes"||decision == "yes"||decision == "YES"||decision == "1"){
+		cout<< "Enter admin password: ";
+		getline(cin>>ws, adminPassword);
+		if (adminPassword == "1234"){
+			stringstream ss;
+			string userQuerydb, botResponsedb;
+			cout<<"\nEnter userQuery: ";
+			getline(cin>>ws, userQuerydb);
+			cout<<"Enter botResponse: ";
+			getline(cin>>ws, botResponsedb);
+			ss <<"INSERT INTO convo (userQuery, botResponse) VALUES ('"+userQuerydb+"','"+botResponsedb+"')";
+			string query = ss.str();
+			const char* q = query.c_str();
+			qstate = mysql_query(conn,q);
+			if(qstate == 0){
+				cout<<"Conversation added"<<endl<<endl;
+			}
+			else{
+				cout<<"Failed to insert"<<endl;	
+			}
+		}
+		else{
+			cout<<"SentiBOT: Wrong Password!"<<endl<<endl;
+		}		
 	}
 	else{
-		cout<<"Failed to insert"<<endl;	
+		cout<<"SentiBOT: Okay!"<<endl<<endl;
 	}
 }
 
@@ -100,7 +118,7 @@ int main()
 			cout<<"User: "; 
 			cin>>choice;
 			cin.ignore(100, '\n');
-				if (choice == "1" || choice =="Yes"){
+				if (choice == "1" || choice =="Yes" || choice =="yes"){
 					cout<<"Thank you for using SentiBOT. Goodbye :D";
 					sessionCounter==0;
 					break;	
