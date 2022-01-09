@@ -4,12 +4,13 @@
 #include <mysqld_error.h>
 #include <sstream>
 #include <bits/stdc++.h>
+#include <conio.h>
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 using namespace std; 
 
 const char* hostname  = "localhost";
 const char* username  = "root";
-const char* password = "aaronsy10";
+const char* password = "RavidPhelpsR212000";
 const char* database = "sentibot";
 unsigned int port = 3306;
 const char* unixsocket = NULL;
@@ -21,8 +22,8 @@ MYSQL* connectdatabase(){ //connect to database
 	conn = mysql_real_connect (conn, hostname, username, password, database, port, unixsocket, clientflag);	//connecting to database using credentials
 
 	if (conn){
-		cout<<"SentiBOT: Hi I am SentiBOT. How may I help you?"<<endl;
-		cout<<"SentiBOT:  If you want assistance with product reviews type !help"<<endl<<endl;
+		cout<<"Peri: Hi I am SentiBOT. How may I help you?"<<endl;
+		cout<<"Peri: If you want assistance with product reviews type !help"<<endl<<endl;
 		return conn;
 	}
 	else{
@@ -35,36 +36,70 @@ insert (MYSQL* conn){ //insert conversation into convo database
 	int qstate = 0;
 	string decision, adminPassword; //decision to add
 	repeat:
-	cout<<"SentiBOT: Sorry I didn't quite get that. Would you like to add it to my vocabulary? (yes/no)"<<endl;
+	cout<<"Peri: Sorry I didn't quite get that. Would you like to teach me the appropriate response? (yes/no)"<<endl;
 	cout<< "User: ";
 	getline(cin>>ws, decision);
 	if (0 == strcasecmp(&decision[0],"yes")){
-		cout<< "Enter admin password: ";
-		getline(cin>>ws, adminPassword);
-		if (adminPassword == "1234"){
-			stringstream ss;
-			string userQuerydb, botResponsedb;
-			cout<<"\nEnter userQuery: ";
-			getline(cin>>ws, userQuerydb);
-			cout<<"Enter botResponse: ";
-			getline(cin>>ws, botResponsedb);
-			ss <<"INSERT INTO convo (userQuery, botResponse) VALUES ('"+userQuerydb+"','"+botResponsedb+"')";
-			string query = ss.str();
-			const char* q = query.c_str();
-			qstate = mysql_query(conn,q);
-			if(qstate == 0){
-				cout<<"Conversation added"<<endl<<endl;
+		int tries = 0,displaytries;
+		    char ch;
+			verification:
+			cout<<"Peri: Please input Verification code"<<endl;
+		    cout<<"User: ";
+		    string pass = "";
+			ch = _getch();
+			while(ch!=13)
+			{
+				pass.push_back(ch);
+				cout<<'*';
+				ch = _getch();
 			}
-			else{
-				cout<<"Failed to insert"<<endl;	
+			if (pass == "1234" && tries <=3)
+			{
+				
+				stringstream ss;
+				string userQuerydb="", botResponsedb="";
+				cout<<"\nEnter User Input: ";
+				getline(cin>>ws, userQuerydb);
+				cout<<"Enter Bot Response: ";
+				getline(cin>>ws, botResponsedb);
+				ss <<"INSERT INTO convo (userQuery, botResponse) VALUES ('"+userQuerydb+"','"+botResponsedb+"')";
+				string query = ss.str();
+				const char* q = query.c_str();
+				confirmadd:
+				cout<<"Peri: Are you sure about adding this response?(yes/no)"<<endl<<"User: ";
+				getline(cin>>ws, decision);
+				if(0 == strcasecmp(&decision[0],"yes")){
+					qstate = mysql_query(conn,q);
+					if(qstate == 0){
+						cout<<"Conversation added"<<endl<<endl;
+					}
+					else{
+						cout<<"Failed to insert"<<endl;	
+					}
+				}
+				else if(0 == strcasecmp(&decision[0],"no")){
+					cout<<"Peri: Alright! How else can I help?"<<endl;
+				}
+				else{
+					cout<<"Peri: Sorry, I didn't understand that."<<endl;
+					goto confirmadd;
+				}
+				
 			}
-		}
-		else{
-			cout<<"SentiBOT: Wrong Password!"<<endl<<endl;
-		}		
+			else if (tries == 3)
+			{
+				cout<<endl<<"Peri: You have entered the maximum attempts, you can try teaching me that again by asking the same question."<<endl;
+			}
+			else
+			{
+				displaytries = 3-tries;
+				cout <<endl<< "Peri: Sorry the verification code you entered is incorrect. You have "<<displaytries<<" tries left."<<endl;
+				tries++;
+				goto verification;
+			}
 	}
 	else if(0 == strcasecmp(&decision[0],"no")){
-		cout<<"SentiBOT: Okay!"<<endl<<endl;
+		cout<<"Peri: Alright! How else can I help?"<<endl;
 	}
 	else{
 		goto repeat;
@@ -89,7 +124,7 @@ display(MYSQL* conn,string userChat, int adder){ //displaying bot response to us
 				for(int i=0;i<count;i++){
 					responseCounter = i;
 				}
-				cout<<"SentiBOT: "<<row[responseCounter];
+				cout<<"Peri: "<<row[responseCounter];
 				adder=1;
 				cout<<endl;
 			}
@@ -134,7 +169,7 @@ showReviewKIBU(MYSQL* conn){
 	res = mysql_store_result (conn);    
 	row = mysql_fetch_row(res);	
 	cout<<"Product: KIBU Keyboard"<<endl;
-	cout<<"Review Data:"<<endl<<endl;
+	cout<<"Review Data:"<<endl;
 	cout<<"Positive Reviews\tNegative Reviews\tNeutral Reviews"<<endl;
 	for(int i=4;i<7;i++){
 		cout<<row[i]<<"\t\t\t";
@@ -164,7 +199,6 @@ int checkPositive(MYSQL* conn,string userChat){ //checking if word is a positive
 	}
 }
 
-
 int checkNegative(MYSQL* conn,string userChat){ //checking if word is a negative word
 	MYSQL_ROW row;
 	MYSQL_RES* res;
@@ -186,7 +220,6 @@ int checkNegative(MYSQL* conn,string userChat){ //checking if word is a negative
 		cout<<"Failed to fetch";
 	}
 }
-
 
 int wordCount(string str){ //couting the words in a string
 	stringstream s(str);
@@ -234,95 +267,21 @@ int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement
 	return rating;
 }
 
-incrementPositiveRATT(MYSQL* conn){ //increment the value of RATTMousePositiveReviews in reviewdata database
+incrementReview(MYSQL* conn,string product){ //increment the value of KIBUKeyboardNeutralReviews in reviewdata database
 	int qstate = 0;
 	stringstream ss;
-	ss <<"UPDATE reviewdata SET RATTMousePositiveReviews = RATTMousePositiveReviews + 1 WHERE id = 1";
+	ss <<"UPDATE reviewdata SET "+product+" = "+ product+" + 1 WHERE id = 1";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
 	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
+		cout<<"Peri: Your review was counted into our database."<<endl<<endl;
 		}
 	else{
-		cout<<"Your review was not counted into our database."<<endl;	
+		cout<<"Peri: Your review was not counted into our database."<<endl;	
 		}
 }
 
-incrementNegativeRATT(MYSQL* conn){ //increment the value of RATTMouseNegativeReviews in reviewdata database
-	int qstate = 0;
-	stringstream ss;
-	ss <<"UPDATE reviewdata SET RATTMouseNegativeReviews = RATTMouseNegativeReviews + 1 WHERE id = 1";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Your review was not counted into our database."<<endl;	
-		}
-}
-
-incrementNeutralRATT(MYSQL* conn){ //increment the value of RATTMouseNeutralReviews in reviewdata database
-	int qstate = 0;
-	stringstream ss;
-	ss <<"UPDATE reviewdata SET RATTMouseNeutralReviews = RATTMouseNeutralReviews + 1 WHERE id = 1";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Your review was not counted into our database."<<endl;	
-		}
-}
-
-incrementPositiveKIBU(MYSQL* conn){ //increment the value of KIBUKeyboardPositiveReviews in reviewdata database
-	int qstate = 0;
-	stringstream ss;
-	ss <<"UPDATE reviewdata SET KIBUKeyboardPositiveReviews = KIBUKeyboardPositiveReviews + 1 WHERE id = 1";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Your review was not counted into our database."<<endl;	
-		}
-}
-
-incrementNegativeKIBU(MYSQL* conn){ //increment the value of KIBUKeyboardNegativeReviews in reviewdata database
-	int qstate = 0;
-	stringstream ss;
-	ss <<"UPDATE reviewdata SET KIBUKeyboardNegativeReviews = KIBUKeyboardNegativeReviews + 1 WHERE id = 1";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Your review was not counted into our database."<<endl;	
-		}
-}
-
-incrementNeutralKIBU(MYSQL* conn){ //increment the value of KIBUKeyboardNeutralReviews in reviewdata database
-	int qstate = 0;
-	stringstream ss;
-	ss <<"UPDATE reviewdata SET KIBUKeyboardNeutralReviews = KIBUKeyboardNeutralReviews + 1 WHERE id = 1";
-	string query = ss.str();
-	const char* q = query.c_str();
-	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Your review was not counted into our database."<<endl;	
-		}
-}
 
 int main()
 {
@@ -337,7 +296,7 @@ int main()
 		cout<<"User: ";
 		getline(cin>>ws, userChat);
 		if(0 == strcasecmp(&userChat[0],"exit")){
-			cout<<"SentiBOT: Are you sure? (yes/no)"<<endl;
+			cout<<"Peri: Are you sure? (yes/no)"<<endl;
 			cout<<"User: "; 
 			cin>>choice;
 			cin.ignore(100, '\n');
@@ -347,9 +306,13 @@ int main()
 				}
 		}
 		else if(0 == strcasecmp(&userChat[0],"!help")){
-			cout<<"SentiBOT: Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
-			cout<<endl<<"For reviewing our RATT mouse please type RATT review or RATT"<<endl;
-			cout<<"For reviewing our KIBU keyboard please type KIBU review or KIBU"<<endl<<endl;
+			cout<<"Peri: Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
+			cout<<endl<<"-To review our RATT mouse, please type RATT review or RATT"<<endl;
+			cout<<"-To review our KIBU keyboard, please type KIBU review or KIBU"<<endl;
+			cout<<"-To add a response for Peri, please type the user input and provide a verification code to add to our conversation database."<<endl;
+			cout<<"-To display a summary of reviews for our products, please type 'show RATT reviews' or 'show KIBU reviews'"<<endl;
+			cout<<"-To review our KIBU keyboard, please type KIBU review or KIBU"<<endl;
+			cout<<"-For a simple introduction of our products, you can ask 'what is the RATT mouse?' or 'what is the KIBU keyboard?' to know more"<<endl<<endl;
 		}
 		else if (0 == strcasecmp(&userChat[0],"show ratt reviews")){
 			showReviewRATT(conn);
@@ -358,79 +321,79 @@ int main()
 			showReviewKIBU(conn);
 		}
 		else if (userChat=="RATT review" || userChat=="RATT"){
-			cout<<"SentiBOT: What can you say about our RATT mouse?"<<endl;
+			cout<<"Peri: What can you say about our RATT mouse?"<<endl;
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
 			rate = cleanStatement(conn,userChat);
 			if (rate>=1){
-				cout<<"SentiBOT: Thank you for giving this product a positive review"<<endl; //chatbot feedback
-				incrementPositiveRATT(conn); //increment positive review on reviewdata database
+				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
+				incrementReview(conn, "RATTMousePositiveReviews" ); //increment positive review on reviewdata database
 				
 			}
 			else if(rate<=-1){
-				cout<<"SentiBOT: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
-				incrementNegativeRATT(conn); //increment negative review on reviewdata database
+				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
+				incrementReview(conn, "RATTMouseNegativeReviews" ); //increment negative review on reviewdata database
 			}
 			else {
-				cout<<"SentiBOT: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
-				incrementNeutralRATT(conn); //increment neutral review on reviewdata database
+				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
+				incrementReview(conn, "RATTMouseNeutralReviews" ); //increment neutral review on reviewdata database
 			}
-			cout<<"SentiBOT: Thanks for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
+			cout<<"Peri: Thanks for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
 			repeat1: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
 			if (0 == strcasecmp(&choice[0],"yes")){
 				sessionCounter==1;
-				cout<<"SentiBOT: What's up? "<<endl;
+				cout<<"Peri: What's up? "<<endl;
 				goto userStart; //go to user input at the start
 			}
 			else if (0 == strcasecmp(&choice[0],"no")){
 				sessionCounter==0;
-				cout<<"SentiBOT: Thanks for chatting with me! Hope to see you soon!"<<endl;
+				cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
 			}
 			else{
-				cout<<"SentiBOT: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
+				cout<<"Peri: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
 				goto repeat1;
 			}
 			
 		}
 		else if (userChat=="KIBU review" || userChat=="KIBU"){
-			cout<<"SentiBOT: What can you say about our KIBU keyboard?"<<endl;
+			cout<<"Peri: What can you say about our KIBU keyboard?"<<endl;
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
 			rate = cleanStatement(conn,userChat);
 			if (rate>=1){
-				cout<<"SentiBOT: SentiBOT: Thank you for giving this product a positive review"<<endl; //chatbot feedback
-				incrementPositiveKIBU(conn); //increment positive review on reviewdata database
+				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
+				incrementReview(conn, "KIBUKeyboardPositiveReviews" );//increment positive review on reviewdata database
 			}
 			else if(rate<=-1){
-				cout<<"SentiBOT: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
-				incrementNegativeKIBU(conn); //increment negative review on reviewdata database
+				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
+				incrementReview(conn, "KIBUKeyboardNegativeReviews" ); //increment negative review on reviewdata database
 			}
 			else {
-				cout<<"SentiBOT: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
-				incrementNeutralKIBU(conn); //increment neutral review on reviewdata database
+				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
+				incrementReview(conn, "KIBUKeyboardNeutralReviews" ); //increment neutral review on reviewdata database
 			}
 			
-			cout<<"SentiBOT: Thanks for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
+			cout<<"Peri: Thanks for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
 			repeat2: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
 			if (0 == strcasecmp(&choice[0],"yes")){
 				sessionCounter==1;
-				cout<<"SentiBOT: What's up? "<<endl;
-				cout<<"For assistance with product reviews type !help"<<endl;
+				cout<<"Peri: What's up? "<<endl;
+				cout<<"Peri: For assistance with product reviews type !help"<<endl;
 			}
 			else if (0 == strcasecmp(&choice[0],"no")){
 				sessionCounter==0;
-				cout<<"SentiBOT: Thanks for chatting with me! Hope to see you soon!"<<endl;
+				cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
 			}
 			else{
-				cout<<"SentiBOT: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
+				cout<<"Peri: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
 				goto repeat2;
 			}
 		}
@@ -440,6 +403,6 @@ int main()
 		
 
 	}
-	cout<<"SentiBOT: Thanks for chatting with me! Hope to see you soon!"<<endl;
+	cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
 	return 0;
 }
