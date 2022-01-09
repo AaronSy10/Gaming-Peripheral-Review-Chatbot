@@ -104,6 +104,44 @@ display(MYSQL* conn,string userChat, int adder){ //displaying bot response to us
 	}
 }
 
+showReviewRATT(MYSQL* conn){
+	MYSQL_ROW row;
+	MYSQL_RES* res;
+	stringstream ss;
+	ss<<"SELECT * FROM sentibot.reviewdata WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	int qstate = mysql_query(conn, q); 
+	res = mysql_store_result (conn);    
+	row = mysql_fetch_row(res);	
+	cout<<"Product: RATT Mouse"<<endl;
+	cout<<"Review Data:"<<endl<<endl;
+	cout<<"Positive Reviews\tNegative Reviews\tNeutral Reviews"<<endl;
+	for(int i=1;i<4;i++){
+		cout<<row[i]<<"\t\t\t";
+	}
+	cout<<endl;	
+}
+
+showReviewKIBU(MYSQL* conn){
+	MYSQL_ROW row;
+	MYSQL_RES* res;
+	stringstream ss;
+	ss<<"SELECT * FROM sentibot.reviewdata WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	int qstate = mysql_query(conn, q); 
+	res = mysql_store_result (conn);    
+	row = mysql_fetch_row(res);	
+	cout<<"Product: KIBU Keyboard"<<endl;
+	cout<<"Review Data:"<<endl<<endl;
+	cout<<"Positive Reviews\tNegative Reviews\tNeutral Reviews"<<endl;
+	for(int i=4;i<7;i++){
+		cout<<row[i]<<"\t\t\t";
+	}
+	cout<<endl;	
+}
+
 int checkPositive(MYSQL* conn,string userChat){ //checking if word is a positive word
 	MYSQL_ROW row;
 	MYSQL_RES* res;
@@ -312,6 +350,12 @@ int main()
 			cout<<"SentiBOT: Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
 			cout<<endl<<"For reviewing our RATT mouse please type RATT review or RATT"<<endl;
 			cout<<"For reviewing our KIBU keyboard please type KIBU review or KIBU"<<endl<<endl;
+		}
+		else if (0 == strcasecmp(&userChat[0],"show ratt reviews")){
+			showReviewRATT(conn);
+		}
+		else if (0 == strcasecmp(&userChat[0],"show kibu reviews")){
+			showReviewKIBU(conn);
 		}
 		else if (userChat=="RATT review" || userChat=="RATT"){
 			cout<<"SentiBOT: What can you say about our RATT mouse?"<<endl;
