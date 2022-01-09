@@ -10,7 +10,7 @@ using namespace std;
 
 const char* hostname  = "localhost";
 const char* username  = "root";
-const char* password = "RavidPhelpsR212000";
+const char* password = "aaronsy10";
 const char* database = "sentibot";
 unsigned int port = 3306;
 const char* unixsocket = NULL;
