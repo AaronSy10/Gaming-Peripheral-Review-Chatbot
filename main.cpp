@@ -21,7 +21,8 @@ MYSQL* connectdatabase(){ //connect to database
 	conn = mysql_real_connect (conn, hostname, username, password, database, port, unixsocket, clientflag);	//connecting to database using credentials
 
 	if (conn){
-		cout<<"Hi I am SentiBOT. How may I help you?"<<endl;
+		cout<<"SentiBOT: Hi I am SentiBOT. How may I help you?"<<endl;
+		cout<<"SentiBOT:  If you want assistance with product reviews type !help"<<endl<<endl;
 		return conn;
 	}
 	else{
@@ -33,12 +34,11 @@ MYSQL* connectdatabase(){ //connect to database
 insert (MYSQL* conn){ //insert conversation into convo database
 	int qstate = 0;
 	string decision, adminPassword; //decision to add
-	cout<<"Sorry I didn't quite get that. Would you like to add it to my vocabulary?"<<endl;
-	cout<< "[1]: Yes" << endl;
-	cout<< "[0]: No" << endl;
+	repeat:
+	cout<<"SentiBOT: Sorry I didn't quite get that. Would you like to add it to my vocabulary? (yes/no)"<<endl;
 	cout<< "User: ";
 	getline(cin>>ws, decision);
-	if (decision == "Yes"||decision == "yes"||decision == "YES"||decision == "1"){
+	if (0 == strcasecmp(&decision[0],"yes")){
 		cout<< "Enter admin password: ";
 		getline(cin>>ws, adminPassword);
 		if (adminPassword == "1234"){
@@ -63,8 +63,11 @@ insert (MYSQL* conn){ //insert conversation into convo database
 			cout<<"SentiBOT: Wrong Password!"<<endl<<endl;
 		}		
 	}
-	else{
+	else if(0 == strcasecmp(&decision[0],"no")){
 		cout<<"SentiBOT: Okay!"<<endl<<endl;
+	}
+	else{
+		goto repeat;
 	}
 }
 
@@ -184,7 +187,6 @@ int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement
 	int x = 0;
 	string words[numWords]= "";
 	int rating = 0, pos = 0 , neg = 0;
-	cout<<"SentiBOT: Currently checking word rating..."<<endl;
 	while (ss >> words[x]){
 		pos = checkPositive(conn, words[x]);
 		neg = checkNegative(conn, words[x]);
@@ -290,27 +292,24 @@ int main()
 	string choice; //choice to exit
 	int sessionCounter = 1; //program running
 	MYSQL* conn = connectdatabase();
-	cout<<"If you want assistance with product reviews type !help"<<endl<<endl;
+	
 	while (sessionCounter ==1) //run code while program is open
 	{
 		userStart:
 		cout<<"User: ";
 		getline(cin>>ws, userChat);
-		if(userChat=="exit"||userChat=="Exit"||userChat=="EXIT"){
-			cout<<"Are you sure?\n";
-			cout<< "[1]: Yes" << endl;
-			cout<< "[0]: No" << endl;
+		if(0 == strcasecmp(&userChat[0],"exit")){
+			cout<<"SentiBOT: Are you sure? (yes/no)"<<endl;
 			cout<<"User: "; 
 			cin>>choice;
 			cin.ignore(100, '\n');
-				if (choice == "1" || choice =="Yes" || choice =="yes"){
-					cout<<"Thank you for using SentiBOT. Goodbye :D"<<endl;
+				if (0 == strcasecmp(&choice[0],"yes")){
 					sessionCounter==0; //close program
 					break;	
 				}
 		}
-		else if(userChat=="!help" ||userChat=="!Help"||userChat=="!HELP"){
-			cout<<"Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
+		else if(0 == strcasecmp(&userChat[0],"!help")){
+			cout<<"SentiBOT: Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
 			cout<<endl<<"For reviewing our RATT mouse please type RATT review or RATT"<<endl;
 			cout<<"For reviewing our KIBU keyboard please type KIBU review or KIBU"<<endl<<endl;
 		}
@@ -334,6 +333,7 @@ int main()
 				incrementNeutralRATT(conn); //increment neutral review on reviewdata database
 			}
 			cout<<"SentiBOT: Thanks for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
+			repeat1: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
 			if (0 == strcasecmp(&choice[0],"yes")){
@@ -345,6 +345,10 @@ int main()
 				sessionCounter==0;
 				cout<<"SentiBOT: Thanks for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
+			}
+			else{
+				cout<<"SentiBOT: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
+				goto repeat1;
 			}
 			
 		}
@@ -368,6 +372,7 @@ int main()
 			}
 			
 			cout<<"SentiBOT: Thanks for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
+			repeat2: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
 			if (0 == strcasecmp(&choice[0],"yes")){
@@ -379,6 +384,10 @@ int main()
 				sessionCounter==0;
 				cout<<"SentiBOT: Thanks for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
+			}
+			else{
+				cout<<"SentiBOT: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
+				goto repeat2;
 			}
 		}
 		else{
