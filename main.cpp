@@ -22,8 +22,8 @@ MYSQL* connectdatabase(){ //connect to database
 	conn = mysql_real_connect (conn, hostname, username, password, database, port, unixsocket, clientflag);	//connecting to database using credentials
 
 	if (conn){
-		cout<<"Peri: Hi I am SentiBOT. How may I help you?"<<endl;
-		cout<<"Peri: If you want assistance with product reviews type !help"<<endl<<endl;
+		cout<<"Peri: Hi I am Peri. How may I help you?"<<endl;
+		cout<<"Peri: If you want assistance with our peripheral products type !help"<<endl<<endl;
 		return conn;
 	}
 	else{
