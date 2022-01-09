@@ -306,7 +306,7 @@ int main()
 				}
 		}
 		else if(0 == strcasecmp(&userChat[0],"!help")){
-			cout<<"Peri: Hi I am Pero. A chatbot designed to assist you with your peripherals."<<endl;
+			cout<<"Peri: Hi I am Peri. A chatbot designed to assist you with Blazer gaming peripherals."<<endl;
 			cout<<endl<<"-To review our RATT mouse, please type RATT review or RATT"<<endl;
 			cout<<"-To review our KIBU keyboard, please type KIBU review or KIBU"<<endl;
 			cout<<"-To add a response for Peri, please type the user input and provide a verification code to add to our conversation database."<<endl;
