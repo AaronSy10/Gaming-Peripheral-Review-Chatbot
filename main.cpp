@@ -9,7 +9,7 @@ using namespace std;
 
 const char* hostname  = "localhost";
 const char* username  = "root";
-const char* password = "RavidPhelpsR212000";
+const char* password = "aaronsy10";
 const char* database = "sentibot";
 unsigned int port = 3306;
 const char* unixsocket = NULL;
@@ -18,8 +18,8 @@ unsigned long clientflag = 0;
 MYSQL* connectdatabase(){
 	MYSQL*conn;
 	conn = mysql_init(0);
-	conn = mysql_real_connect (conn, hostname, username, password, database, port, unixsocket, clientflag);
-	//connecting to database using credentials
+	conn = mysql_real_connect (conn, hostname, username, password, database, port, unixsocket, clientflag);	//connecting to database using credentials
+
 	if (conn){
 		cout<<"Connected to database"<<endl;
 		return conn;
@@ -194,6 +194,96 @@ int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement
 	return rating;
 }
 
+incrementPositiveRATT(MYSQL* conn){ //add rating to the database
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET RATTMousePositiveReviews = RATTMousePositiveReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
+incrementNegativeRATT(MYSQL* conn){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET RATTMouseNegativeReviews = RATTMouseNegativeReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
+incrementNeutralRATT(MYSQL* conn){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET RATTMouseNeutralReviews = RATTMouseNeutralReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
+incrementPositiveKIBU(MYSQL* conn){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET KIBUKeyboardPositiveReviews = KIBUKeyboardPositiveReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
+incrementNegativeKIBU(MYSQL* conn){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET KIBUKeyboardNegativeReviews = KIBUKeyboardNegativeReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
+incrementNeutralKIBU(MYSQL* conn){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE reviewdata SET KIBUKeyboardNeutralReviews = KIBUKeyboardNeutralReviews + 1 WHERE id = 1";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Your review was counted into our database."<<endl<<endl;
+		}
+	else{
+		cout<<"Your review was not counted into our database."<<endl;	
+		}
+}
+
 int main()
 {
 	string userChat; //user input
@@ -201,9 +291,10 @@ int main()
 	int sessionCounter = 1; //program running
 	MYSQL* conn = connectdatabase();
 	cout<<"Hi I am SentiBOT. How may I help you?"<<endl;
-	cout<<"If you want assistance with product reviews type !help"<<endl;
+	cout<<"If you want assistance with product reviews type !help"<<endl<<endl;
 	while (sessionCounter ==1) //run code while program is open
 	{
+		userStart:
 		cout<<"User: ";
 		getline(cin>>ws, userChat);
 		if(userChat=="exit"||userChat=="Exit"||userChat=="EXIT"){
@@ -219,24 +310,14 @@ int main()
 					break;	
 				}
 		}
-		else if (userChat == "review"){
-			cout<<"SentiBOT: Please input text to be analyzed."<< endl << "User: ";
-			getline(cin>>ws, userChat);
-			cin.ignore(100, '\n');
-			int rate;
-			cout<<"SentiBOT: I'm analyzing the statement, it might take a minute..."<<endl;
-			rate = cleanStatement(conn,userChat);
-			cout<<"SentiBOT: Thanks for leaving a review";
-			//increment respective column and product depending on the review if it was positive or negative
-	
-		}
 		else if(userChat=="!help" ||userChat=="!Help"||userChat=="!HELP"){
 			cout<<"Hi I am SentiBOT. A chatbot designed to assist you with your product reviews."<<endl;
 			cout<<endl<<"For reviewing our RATT mouse please type RATT review or RATT"<<endl;
 			cout<<"For reviewing our KIBU keyboard please type KIBU review or KIBU"<<endl<<endl;
 		}
 		else if (userChat=="RATT review" || userChat=="RATT"){
-			cout<<"What can you say about our RATT mouse?"<<endl;
+			cout<<"SentiBOT: What can you say about our RATT mouse?"<<endl;
+			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
 			cout<<"SentiBOT: I'm analyzing the statement, it might take a minute..."<<endl;
@@ -245,14 +326,18 @@ int main()
 			if (rate>=1){
 				cout<<"SentiBOT: Positive Review"<<endl; //need tanggalin for feedback lang 
 				//INCREMENT POSITIVE REVIEW ON SUMMARY DATABASE
+				incrementPositiveRATT(conn);
+				
 			}
 			else if(rate<=-1){
 				cout<<"SentiBOT: Negative Review"<<endl;//need tanggalin for feedback lang
 				//INCREMENT NEGATIVE REVIEW ON SUMMARY DATABASE
+				incrementNegativeRATT(conn);
 			}
 			else {
 				cout<<"SentiBOT: Neutral Review"<<endl;//need tanggalin for feedback lang
 				//INCREMENT NEUTRAL REVIEW ON SUMMARY DATABASE
+				incrementNeutralRATT(conn);
 			}
 			//NEED ILAGAY SA TABLE YUNG RESULT NG REVIEW
 			cout<<"SentiBOT: Thanks for leaving a review on our RATT mouse. Would you like to keep chatting?(yes/no)"<<endl;
@@ -261,6 +346,7 @@ int main()
 			if (0 == strcasecmp(&choice[0],"yes")){
 				sessionCounter==1;
 				cout<<"SentiBOT: What's up? "<<endl;
+				goto userStart; //go to user input at the start
 			}
 			else if (0 == strcasecmp(&choice[0],"no")){
 				sessionCounter==0;
@@ -270,7 +356,8 @@ int main()
 			
 		}
 		else if (userChat=="KIBU review" || userChat=="KIBU"){
-			cout<<"What can you say about our KIBU keyboard?"<<endl;
+			cout<<"SentiBOT: What can you say about our KIBU keyboard?"<<endl;
+			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
 			cout<<"SentiBOT: I'm analyzing the statement, it might take a minute..."<<endl;
@@ -279,14 +366,17 @@ int main()
 			if (rate>=1){
 				cout<<"SentiBOT: Positive Review"<<endl;//need tanggalin for feedback lang
 				//INCREMENT POSITIVE REVIEW ON SUMMARY DATABASE
+				incrementPositiveKIBU(conn);
 			}
 			else if(rate<=-1){
 				cout<<"SentiBOT: Negative Review"<<endl;//need tanggalin for feedback lang
 				//INCREMENT NEGATIVE REVIEW ON SUMMARY DATABASE
+				incrementNegativeKIBU(conn);
 			}
 			else {
 				cout<<"SentiBOT: Neutral Review"<<endl;//need tanggalin for feedback lang
 				//INCREMENT NEUTRAL REVIEW ON SUMMARY DATABASE
+				incrementNeutralKIBU(conn);
 			}
 			//NEED ILAGAY SA TABLE YUNG RESULT NG REVIEW
 			cout<<"SentiBOT: Thanks for leaving a review on our KIBU keyboard. Would you like to keep chatting?(yes/no)"<<endl;
