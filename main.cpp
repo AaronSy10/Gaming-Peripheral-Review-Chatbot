@@ -10,7 +10,7 @@ using namespace std;
 
 const char* hostname  = "localhost";
 const char* username  = "root";
-const char* password = "aaronsy10";
+const char* password = "RavidPhelpsR212000";
 const char* database = "sentibot";
 unsigned int port = 3306;
 const char* unixsocket = NULL;
@@ -175,6 +175,24 @@ showReviewKIBU(MYSQL* conn){
 		cout<<row[i]<<"\t\t\t";
 	}
 	cout<<endl;	
+}
+
+showTopKeywords(MYSQL* conn,string bias, string peri){
+	MYSQL_ROW row;
+	MYSQL_RES* res;
+	stringstream ss;
+	ss<<"SELECT "+bias+"word FROM "+bias+" ORDER BY "+peri+"counter DESC LIMIT 3";
+	string query = ss.str();
+	const char* q = query.c_str();
+	int qstate = mysql_query(conn, q); 
+	res = mysql_store_result (conn);   
+	cout<<"Product: Top "+bias+" words."<<endl;
+	int x = 1;
+	while(row = mysql_fetch_row(res)){
+		cout<<"Top "<<x<<". "<<row[0]<<endl;
+		x++;
+	}
+	cout<<endl<<endl;	
 }
 
 int checkPositive(MYSQL* conn,string userChat){ //checking if word is a positive word
@@ -360,9 +378,13 @@ int main()
 		}
 		else if (0 == strcasecmp(&userChat[0],"show ratt reviews")){
 			showReviewRATT(conn);
+			showTopKeywords(conn,"positive", "RATT");
+			showTopKeywords(conn,"negative", "RATT");
 		}
 		else if (0 == strcasecmp(&userChat[0],"show kibu reviews")){
 			showReviewKIBU(conn);
+			showTopKeywords(conn,"positive", "KIBU");
+			showTopKeywords(conn,"negative", "KIBU");
 		}
 		else if (0 == strcasecmp(&userChat[0],"ratt review") || 0 == strcasecmp(&userChat[0],"ratt")){
 			cout<<"Peri: What can you say about our RATT mouse?"<<endl;
