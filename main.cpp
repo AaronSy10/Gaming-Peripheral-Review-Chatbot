@@ -354,26 +354,7 @@ int main()
 				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "RATTMouseNeutralReviews" ); //increment neutral review on reviewdata database
 				feedbackStore(conn, "rattfeedback"); //store user feedback to database
-			}
-			cout<<"Peri: Thank you for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
-			repeat1: //return here for unrecognized user input
-			cout<<"User: ";
-			getline(cin>>ws,choice);
-			if (0 == strcasecmp(&choice[0],"yes")){
-				sessionCounter==1;
-				cout<<"Peri: What's up? "<<endl;
-				goto userStart; //go to user input at the start
-			}
-			else if (0 == strcasecmp(&choice[0],"no")){
-				sessionCounter==0;
-				cout<<"Peri: Thank you for chatting with me! Hope to see you soon!"<<endl;
-				return 0;
-			}
-			else{
-				cout<<"Peri: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
-				goto repeat1;
-			}
-			
+			}	
 		}
 		else if (0 == strcasecmp(&userChat[0],"kibu review") || 0 == strcasecmp(&userChat[0],"kibu")){
 			cout<<"Peri: What can you say about our KIBU keyboard?"<<endl;
@@ -395,25 +376,6 @@ int main()
 				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "KIBUKeyboardNeutralReviews" ); //increment neutral review on reviewdata database
 				feedbackStore(conn, "kibufeedback"); //store user feedback to database
-			}
-			
-			cout<<"Peri: Thank you for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
-			repeat2: //return here for unrecognized user input
-			cout<<"User: ";
-			getline(cin>>ws,choice);
-			if (0 == strcasecmp(&choice[0],"yes")){
-				sessionCounter==1;
-				cout<<"Peri: What's up? "<<endl;
-				cout<<"Peri: For assistance with product reviews type !help"<<endl;
-			}
-			else if (0 == strcasecmp(&choice[0],"no")){
-				sessionCounter==0;
-				cout<<"Peri: Thank you for chatting with me! Hope to see you soon!"<<endl;
-				return 0;
-			}
-			else{
-				cout<<"Peri: Sorry I didn't get that. Would you like to keep chatting? (yes/no)"<<endl;
-				goto repeat2;
 			}
 		}
 		else{
