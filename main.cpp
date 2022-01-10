@@ -343,7 +343,7 @@ int main()
 			if (rate>=1){
 				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
 				incrementReview(conn, "RATTMousePositiveReviews" ); //increment positive review on reviewdata database
-				
+				feedbackStore(conn, "rattfeedback"); //store user feedback to database
 			}
 			else if(rate<=-1){
 				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
@@ -384,6 +384,7 @@ int main()
 			if (rate>=1){
 				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
 				incrementReview(conn, "KIBUKeyboardPositiveReviews" );//increment positive review on reviewdata database
+				feedbackStore(conn, "kibufeedback"); //store user feedback to database
 			}
 			else if(rate<=-1){
 				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
