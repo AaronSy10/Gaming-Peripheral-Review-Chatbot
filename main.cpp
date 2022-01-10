@@ -294,7 +294,7 @@ feedbackStore(MYSQL* conn, string productFeedback){
 		cout<<"Peri: Thank you for giving feedback to our product."<<endl;
 	}
 	else{
-		cout<<"error";
+		cout<<"Peri: Sorry we failed to get your feedback."<<endl;
 	}
 }
 
