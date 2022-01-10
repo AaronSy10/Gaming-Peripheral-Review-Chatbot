@@ -230,6 +230,30 @@ int wordCount(string str){ //couting the words in a string
 	return count;
 }
 
+negativeKeywordIncrement(MYSQL* conn, string text){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE negative SET counter = counter + 1 WHERE negativeword = "+text+";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate != 0){
+		cout<<"Peri: Negative keyword was not counted."<<endl;
+	}
+}
+
+positiveKeywordIncrement(MYSQL* conn, string text){
+	int qstate = 0;
+	stringstream ss;
+	ss <<"UPDATE positive SET counter = counter + 1 WHERE positiveword = "+text+";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate != 0){
+		cout<<"Peri: Positive keyword was not counted."<<endl;
+	}
+}
+
 int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement(connection, string to be cleaned) //cleaning the statement for user rating
 	
 	//remove punctuations
@@ -261,6 +285,12 @@ int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement
 	while (ss >> words[x]){
 		pos = checkPositive(conn, words[x]);
 		neg = checkNegative(conn, words[x]);
+		if (pos>=1){
+			positiveKeywordIncrement(conn,words[x]);
+		}
+		if (neg>=1){
+			negativeKeywordIncrement(conn,words[x]);
+		}
 		rating = rating + pos - neg;
 		x++;
 	}
