@@ -233,7 +233,7 @@ int wordCount(string str){ //couting the words in a string
 negativeKeywordIncrement(MYSQL* conn, string text){
 	int qstate = 0;
 	stringstream ss;
-	ss <<"UPDATE negative SET counter = counter + 1 WHERE negativeword = "+text+";
+	ss <<"UPDATE negative SET counter = counter + 1 WHERE negativeword = '"+text+"'";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
@@ -245,7 +245,7 @@ negativeKeywordIncrement(MYSQL* conn, string text){
 positiveKeywordIncrement(MYSQL* conn, string text){
 	int qstate = 0;
 	stringstream ss;
-	ss <<"UPDATE positive SET counter = counter + 1 WHERE positiveword = "+text+";
+	ss <<"UPDATE positive SET counter = counter + 1 WHERE positiveword = '"+text+"'";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
