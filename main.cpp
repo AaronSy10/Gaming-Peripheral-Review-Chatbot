@@ -274,14 +274,29 @@ incrementReview(MYSQL* conn,string product){ //increment the value of KIBUKeyboa
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
-	if(qstate == 0){
-		cout<<"Peri: Your review was counted into our database."<<endl<<endl;
-		}
-	else{
-		cout<<"Peri: Your review was not counted into our database."<<endl;	
+	if(qstate != 0){
+		cout<<"Peri: Your review was not counted into our database."<<endl;
 		}
 }
 
+feedbackStore(MYSQL* conn, string productFeedback){
+	string feedback;
+	int qstate = 0;
+	stringstream ss;
+	cout<<"Peri: How do you think we can improve our product?"<<endl;
+	cout<<"User: ";
+	getline(cin>>ws, feedback);
+	ss <<"INSERT INTO "+ productFeedback +" (feedback) VALUES ('"+feedback+"')";
+	string query = ss.str();
+	const char* q = query.c_str();
+	qstate = mysql_query(conn,q);
+	if(qstate == 0){
+		cout<<"Peri: Thank you for giving feedback to our product."<<endl;
+	}
+	else{
+		cout<<"error";
+	}
+}
 
 int main()
 {
@@ -309,9 +324,8 @@ int main()
 			cout<<"Peri: Hi I am Peri. A chatbot designed to assist you with Blazer gaming peripherals."<<endl;
 			cout<<endl<<"-To review our RATT mouse, please type RATT review or RATT"<<endl;
 			cout<<"-To review our KIBU keyboard, please type KIBU review or KIBU"<<endl;
-			cout<<"-To add a response for Peri, please type the user input and provide a verification code to add to our conversation database."<<endl;
+			cout<<"-To add a response for Peri, please type the user input and provide the verification code."<<endl;
 			cout<<"-To display a summary of reviews for our products, please type 'show RATT reviews' or 'show KIBU reviews'"<<endl;
-			cout<<"-To review our KIBU keyboard, please type KIBU review or KIBU"<<endl;
 			cout<<"-For a simple introduction of our products, you can ask 'what is the RATT mouse?' or 'what is the KIBU keyboard?' to know more"<<endl<<endl;
 		}
 		else if (0 == strcasecmp(&userChat[0],"show ratt reviews")){
@@ -320,7 +334,7 @@ int main()
 		else if (0 == strcasecmp(&userChat[0],"show kibu reviews")){
 			showReviewKIBU(conn);
 		}
-		else if (userChat=="RATT review" || userChat=="RATT"){
+		else if (0 == strcasecmp(&userChat[0],"ratt review") || 0 == strcasecmp(&userChat[0],"ratt")){
 			cout<<"Peri: What can you say about our RATT mouse?"<<endl;
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
@@ -334,12 +348,14 @@ int main()
 			else if(rate<=-1){
 				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "RATTMouseNegativeReviews" ); //increment negative review on reviewdata database
+				feedbackStore(conn, "rattfeedback"); //store user feedback to database
 			}
 			else {
 				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "RATTMouseNeutralReviews" ); //increment neutral review on reviewdata database
+				feedbackStore(conn, "rattfeedback"); //store user feedback to database
 			}
-			cout<<"Peri: Thanks for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
+			cout<<"Peri: Thank you for leaving a review on our RATT mouse. Would you like to keep chatting? (yes/no)"<<endl;//convo after review
 			repeat1: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
@@ -350,7 +366,7 @@ int main()
 			}
 			else if (0 == strcasecmp(&choice[0],"no")){
 				sessionCounter==0;
-				cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
+				cout<<"Peri: Thank you for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
 			}
 			else{
@@ -359,7 +375,7 @@ int main()
 			}
 			
 		}
-		else if (userChat=="KIBU review" || userChat=="KIBU"){
+		else if (0 == strcasecmp(&userChat[0],"kibu review") || 0 == strcasecmp(&userChat[0],"kibu")){
 			cout<<"Peri: What can you say about our KIBU keyboard?"<<endl;
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
@@ -372,13 +388,15 @@ int main()
 			else if(rate<=-1){
 				cout<<"Peri: Sorry for that. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "KIBUKeyboardNegativeReviews" ); //increment negative review on reviewdata database
+				feedbackStore(conn, "kibufeedback"); //store user feedback to database
 			}
 			else {
 				cout<<"Peri: Thank you for your review. We will try to improve our product to serve you better."<<endl; //chatbot feedback
 				incrementReview(conn, "KIBUKeyboardNeutralReviews" ); //increment neutral review on reviewdata database
+				feedbackStore(conn, "kibufeedback"); //store user feedback to database
 			}
 			
-			cout<<"Peri: Thanks for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
+			cout<<"Peri: Thank you for leaving a review on our KIBU keyboard. Would you like to keep chatting? (yes/no)"<<endl; //convo after review
 			repeat2: //return here for unrecognized user input
 			cout<<"User: ";
 			getline(cin>>ws,choice);
@@ -389,7 +407,7 @@ int main()
 			}
 			else if (0 == strcasecmp(&choice[0],"no")){
 				sessionCounter==0;
-				cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
+				cout<<"Peri: Thank you for chatting with me! Hope to see you soon!"<<endl;
 				return 0;
 			}
 			else{
@@ -403,6 +421,6 @@ int main()
 		
 
 	}
-	cout<<"Peri: Thanks for chatting with me! Hope to see you soon!"<<endl;
+	cout<<"Peri: Thank you for chatting with me! Hope to see you soon!"<<endl;
 	return 0;
 }
