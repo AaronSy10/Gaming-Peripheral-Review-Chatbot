@@ -230,10 +230,10 @@ int wordCount(string str){ //couting the words in a string
 	return count;
 }
 
-negativeKeywordIncrement(MYSQL* conn, string text){
+negativeKeywordIncrement(MYSQL* conn, string text,string productcounter){
 	int qstate = 0;
 	stringstream ss;
-	ss <<"UPDATE negative SET counter = counter + 1 WHERE negativeword = '"+text+"'";
+	ss <<"UPDATE negative SET "+productcounter+" = "+productcounter+"+ 1 WHERE negativeword = '"+text+"'";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
@@ -242,10 +242,10 @@ negativeKeywordIncrement(MYSQL* conn, string text){
 	}
 }
 
-positiveKeywordIncrement(MYSQL* conn, string text){
+positiveKeywordIncrement(MYSQL* conn, string text,string productcounter){
 	int qstate = 0;
 	stringstream ss;
-	ss <<"UPDATE positive SET counter = counter + 1 WHERE positiveword = '"+text+"'";
+	ss <<"UPDATE positive SET "+productcounter+" = "+productcounter+" + 1 WHERE positiveword = '"+text+"'";
 	string query = ss.str();
 	const char* q = query.c_str();
 	qstate = mysql_query(conn,q);
@@ -254,7 +254,7 @@ positiveKeywordIncrement(MYSQL* conn, string text){
 	}
 }
 
-int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement(connection, string to be cleaned) //cleaning the statement for user rating
+int cleanStatement(MYSQL* conn, string text,string productcounter){   //to use function cleanStatement(connection, string to be cleaned) //cleaning the statement for user rating
 	
 	//remove punctuations
 	for (int i = 0, len = text.size(); i < len; i++)
@@ -286,10 +286,10 @@ int cleanStatement(MYSQL* conn, string text){   //to use function cleanStatement
 		pos = checkPositive(conn, words[x]);
 		neg = checkNegative(conn, words[x]);
 		if (pos>=1){
-			positiveKeywordIncrement(conn,words[x]);
+			positiveKeywordIncrement(conn,words[x],productcounter);
 		}
 		if (neg>=1){
-			negativeKeywordIncrement(conn,words[x]);
+			negativeKeywordIncrement(conn,words[x],productcounter);
 		}
 		rating = rating + pos - neg;
 		x++;
@@ -369,7 +369,7 @@ int main()
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
-			rate = cleanStatement(conn,userChat);
+			rate = cleanStatement(conn,userChat,"rattcounter");
 			if (rate>=1){
 				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
 				incrementReview(conn, "RATTMousePositiveReviews" ); //increment positive review on reviewdata database
@@ -391,7 +391,7 @@ int main()
 			cout<<"User: ";
 			getline(cin>>ws, userChat);
 			int rate;
-			rate = cleanStatement(conn,userChat);
+			rate = cleanStatement(conn,userChat,"kibucounter");
 			if (rate>=1){
 				cout<<"Peri: Thank you for giving this product a positive review."<<endl; //chatbot feedback
 				incrementReview(conn, "KIBUKeyboardPositiveReviews" );//increment positive review on reviewdata database
