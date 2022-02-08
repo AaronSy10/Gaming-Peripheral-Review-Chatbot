@@ -1,4 +1,4 @@
-# emerging
+# Gaming Peripheral Review Chatbot
 
 --Final Project in Emerging Technologies--
 
